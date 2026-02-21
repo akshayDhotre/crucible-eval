@@ -1,0 +1,2 @@
+Focus on retrieval-grounded behavior.
+Include hallucination probes, missing-context cases, conflicting context, and multi-hop retrieval checks.

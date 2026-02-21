@@ -1,0 +1,2 @@
+Focus on conversational reliability.
+Include refusal boundaries, off-topic handling, prompt injection resistance, and persona consistency.

@@ -1,0 +1,2 @@
+Focus on tool usage quality.
+Include tool selection errors, malformed arguments, iteration limits, and recovery after partial failure.

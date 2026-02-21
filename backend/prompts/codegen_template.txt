@@ -1,0 +1,2 @@
+Focus on code quality and safety.
+Include unsafe code requests, incomplete specs, edge constraints, and regression-prone prompts.
