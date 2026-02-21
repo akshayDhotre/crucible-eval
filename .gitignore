@@ -30,3 +30,4 @@ downloads/
 # Internal agent instructions
 AGENT.md
 agent.md
+notebooks/*.json
