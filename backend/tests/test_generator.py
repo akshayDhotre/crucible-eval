@@ -85,6 +85,28 @@ class GeneratorTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(suite.frameworkConfig.get("mode"), "demo-local-ollama")
 
+    async def test_deepeval_export_uses_python_file(self) -> None:
+        details = AppDetails(
+            appType="rag",
+            systemPrompt="You answer from policy text only.",
+            description="Support bot for return policy.",
+            domain="e-commerce",
+            provider="openai",
+            testCaseCount=10,
+            outputFormat="deepeval",
+        )
+
+        with patch.dict(
+            "os.environ",
+            {"DEMO_MODE_ENABLED": "true", "OPENAI_API_KEY": "", "ANTHROPIC_API_KEY": "", "GOOGLE_API_KEY": ""},
+            clear=False,
+        ):
+            _, filename, mime_type, export_content = await generate_test_suite(details)
+
+        self.assertTrue(filename.endswith(".py"))
+        self.assertEqual(mime_type, "text/x-python")
+        self.assertIn("LLMTestCase(", export_content)
+
 
 if __name__ == "__main__":
     unittest.main()

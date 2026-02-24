@@ -171,9 +171,8 @@ def _export_content(suite: TestSuite, output_format: str, provider: str) -> tupl
         content = build_promptfoo_config(as_dict, provider)
         return f"{base}.yaml", "application/x-yaml", content, {"format": "promptfoo"}
     if output_format == "deepeval":
-        data = build_deepeval_config(as_dict)
-        content = json.dumps(data, indent=2)
-        return f"{base}.json", "application/json", content, {"format": "deepeval"}
+        content = build_deepeval_config(as_dict)
+        return f"{base}.py", "text/x-python", content, {"format": "deepeval"}
     if output_format == "ragas":
         data = build_ragas_dataset(as_dict)
         content = json.dumps(data, indent=2)

@@ -12,7 +12,7 @@ const DEFAULT_PROVIDER = process.env.NEXT_PUBLIC_DEFAULT_PROVIDER ?? "openai";
 const DEFAULT_MODEL_NAME = process.env.NEXT_PUBLIC_DEFAULT_MODEL_NAME ?? "";
 const extensionByFormat: Record<OutputFormat, string> = {
   promptfoo: ".yaml",
-  deepeval: ".json",
+  deepeval: ".py",
   ragas: ".json",
   raw: ".json",
 };

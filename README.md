@@ -27,6 +27,30 @@ Given app details, Crucible Eval generates:
 3. Benchmark recommendations mapped by app type and domain.
 4. Downloadable artifacts with deterministic naming for traceability.
 
+## Exporter Runtime Fields
+
+### Ragas Export (`.json`)
+
+Ragas export is a dataset scaffold. Before running metrics, you must populate:
+1. `answer`: the actual response produced by your LLM for each `question`.
+2. `contexts`: retrieved document chunks from your RAG retriever for each `question`.
+
+Notes:
+1. Crucible intentionally exports `contexts` as empty lists (`[]`) because retrieval data is runtime-specific.
+2. The file includes a top-level `_instructions` key as a reminder of what to fill.
+
+### DeepEval Export (`.py`)
+
+DeepEval export is a runnable Python dataset script using `LLMTestCase` and `EvaluationDataset`.
+
+Before evaluating, you must populate:
+1. `actual_output`: the actual model output for each test input.
+2. `retrieval_context`: retrieved RAG chunks for each test input (if applicable).
+
+Notes:
+1. Crucible does not emit a DeepEval JSON format because DeepEval is a Python-native library.
+2. The generated script is intentionally minimal and directly executable after those runtime fields are filled.
+
 ## Why Multiple LLM Providers
 
 Different teams have different platform constraints (cost, latency, legal/privacy, model capability, regional availability).
