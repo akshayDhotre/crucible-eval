@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Literal, cast
@@ -15,7 +16,6 @@ from backend.services.exporters.ragas import build_ragas_dataset
 from backend.services.providers.anthropic_provider import AnthropicProvider
 from backend.services.providers.base import BaseLLMProvider
 from backend.services.providers.google_provider import GoogleProvider
-from backend.services.providers.lmstudio_provider import LMStudioProvider
 from backend.services.providers.ollama_provider import OllamaProvider
 from backend.services.providers.openai_provider import OpenAIProvider
 
@@ -61,11 +61,27 @@ DEMO_CATEGORIES = [
     "jailbreak",
 ]
 
-Mode = Literal["live", "demo-local-ollama", "demo-local-lmstudio", "demo-static"]
+Mode = Literal["live", "demo-local-ollama", "demo-static"]
 
 
 def _load_prompt(name: str) -> str:
     return (PROMPTS_DIR / name).read_text(encoding="utf-8")
+
+
+def _extract_json(raw: str) -> str:
+    """Strip thinking tokens and markdown fences, return the innermost JSON object."""
+    # Remove <think>...</think> blocks (deepseek-r1, qwen3, etc.)
+    raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL).strip()
+    # Strip markdown code fences: ```json ... ``` or ``` ... ```
+    fenced = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", raw, re.DOTALL)
+    if fenced:
+        return fenced.group(1).strip()
+    # Fall back to the outermost { ... } in the string
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start != -1 and end > start:
+        return raw[start : end + 1]
+    return raw
 
 
 def _build_provider(name: str) -> BaseLLMProvider:
@@ -77,13 +93,11 @@ def _build_provider(name: str) -> BaseLLMProvider:
         return GoogleProvider()
     if name == "ollama":
         return OllamaProvider()
-    if name == "lmstudio":
-        return LMStudioProvider()
     raise ValueError(f"Unsupported provider: {name}")
 
 
 def _provider_is_configured(name: str) -> bool:
-    if name in {"ollama", "lmstudio"}:
+    if name == "ollama":
         return True
     key_name = PROVIDER_KEY_MAP[name]
     return bool(os.getenv(key_name, "").strip())
@@ -91,11 +105,6 @@ def _provider_is_configured(name: str) -> bool:
 
 def _demo_mode_enabled() -> bool:
     return os.getenv("DEMO_MODE_ENABLED", "true").strip().lower() in {"1", "true", "yes", "on"}
-
-
-def _demo_provider() -> str:
-    raw = os.getenv("DEMO_PROVIDER", os.getenv("DEMO_LOCAL_PROVIDER", "ollama")).strip().lower()
-    return raw if raw in {"ollama", "lmstudio"} else "ollama"
 
 
 def _benchmarks(app_type: str, domain: str) -> list[BenchmarkRef]:
@@ -189,9 +198,13 @@ async def _generate_with_provider(details: AppDetails) -> TestSuite:
     provider = _build_provider(details.provider)
     parse_error: Exception | None = None
 
+    provider_timeout = float(os.getenv("LOCAL_LLM_TIMEOUT_SECONDS", "120"))
+    outer_timeout = provider_timeout + 10  # give httpx a chance to fail first
+
     for attempt in range(2):
         try:
-            raw = await asyncio.wait_for(provider.generate(f"{system}\n\n{template}", user), timeout=60)
+            raw = await asyncio.wait_for(provider.generate(f"{system}\n\n{template}", user), timeout=outer_timeout)
+            raw = _extract_json(raw)
             suite = TestSuite.model_validate_json(raw)
             suite.appType = details.appType
             suite.benchmarks = _benchmarks(details.appType, details.domain)
@@ -215,22 +228,27 @@ async def generate_test_suite(details: AppDetails) -> tuple[TestSuite, str, str,
         try:
             suite = await _generate_with_provider(details)
         except Exception as exc:
+            if requested_provider == "ollama":
+                provider_obj = _build_provider(requested_provider)
+                base_url = getattr(provider_obj, "base_url", "unknown")
+                model = getattr(provider_obj, "model", "unknown")
+                raise RuntimeError(
+                    f"{requested_provider} request failed. "
+                    f"Make sure the service is running at {base_url} "
+                    f"and model '{model}' is available. "
+                    f"Original error: {exc}"
+                ) from exc
             if not _demo_mode_enabled():
                 raise
-            if requested_provider in {"ollama", "lmstudio"}:
-                suite = _build_demo_suite(details)
-                mode = "demo-static"
-            else:
-                raise exc
+            raise exc
     else:
         if not _demo_mode_enabled():
             raise RuntimeError(f"{PROVIDER_KEY_MAP[requested_provider]} is not configured and demo mode is disabled")
 
-        demo_provider = _demo_provider()
-        demo_details = details.model_copy(update={"provider": demo_provider})
+        demo_details = details.model_copy(update={"provider": "ollama"})
         try:
             suite = await _generate_with_provider(demo_details)
-            mode = cast(Mode, f"demo-local-{demo_provider}")
+            mode = "demo-local-ollama"
         except Exception:
             suite = _build_demo_suite(details)
             mode = "demo-static"

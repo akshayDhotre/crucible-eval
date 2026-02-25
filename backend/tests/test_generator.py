@@ -27,7 +27,7 @@ class GeneratorTest(unittest.IsolatedAsyncioTestCase):
             suite, filename, mime_type, _ = await generate_test_suite(details)
 
         self.assertEqual(suite.totalCases, 10)
-        self.assertIn(suite.frameworkConfig.get("mode"), {"demo-static", "demo-local-ollama", "demo-local-lmstudio"})
+        self.assertIn(suite.frameworkConfig.get("mode"), {"demo-static", "demo-local-ollama"})
         self.assertTrue(filename.startswith("crucible_chatbot_raw_"))
         self.assertTrue(filename.endswith(".json"))
         self.assertEqual(mime_type, "application/json")
@@ -69,7 +69,6 @@ class GeneratorTest(unittest.IsolatedAsyncioTestCase):
             "os.environ",
             {
                 "DEMO_MODE_ENABLED": "true",
-                "DEMO_PROVIDER": "ollama",
                 "OPENAI_API_KEY": "",
                 "ANTHROPIC_API_KEY": "",
                 "GOOGLE_API_KEY": "",

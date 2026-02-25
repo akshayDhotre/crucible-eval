@@ -10,14 +10,12 @@ PROVIDER_TARGETS = {
     "anthropic": "anthropic:messages:claude-sonnet-4-6",
     "google": "google:gemini-2.0-flash",
     "ollama": "ollama:chat:llama3.1",
-    "lmstudio": "openai:chat:local-model",
 }
 PROVIDER_PREFIX = {
     "openai": "openai",
     "anthropic": "anthropic:messages",
     "google": "google",
     "ollama": "ollama:chat",
-    "lmstudio": "openai:chat",
 }
 
 

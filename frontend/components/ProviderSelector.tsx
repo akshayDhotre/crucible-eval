@@ -5,7 +5,7 @@ type Props = {
   onChange: (provider: Provider) => void;
 };
 
-const options: Provider[] = ["openai", "anthropic", "google", "ollama", "lmstudio"];
+const options: Provider[] = ["openai", "anthropic", "google", "ollama"];
 
 export function ProviderSelector({ value, onChange }: Props) {
   return (

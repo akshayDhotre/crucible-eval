@@ -1,5 +1,5 @@
 export type AppType = "rag" | "chatbot" | "agent" | "codegen" | "custom";
-export type Provider = "openai" | "anthropic" | "google" | "ollama" | "lmstudio";
+export type Provider = "openai" | "anthropic" | "google" | "ollama";
 export type OutputFormat = "promptfoo" | "deepeval" | "ragas" | "raw";
 
 export type AppDetails = {

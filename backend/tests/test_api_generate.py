@@ -41,7 +41,7 @@ class GenerateApiTest(unittest.TestCase):
 
         suite = body["suite"]
         self.assertEqual(suite["totalCases"], 10)
-        self.assertIn(suite["frameworkConfig"]["mode"], ["demo-static", "demo-local-ollama", "demo-local-lmstudio"])
+        self.assertIn(suite["frameworkConfig"]["mode"], ["demo-static", "demo-local-ollama"])
 
     def test_generate_returns_503_when_demo_disabled_and_no_key(self) -> None:
         payload = {

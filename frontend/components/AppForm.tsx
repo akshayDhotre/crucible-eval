@@ -9,7 +9,6 @@ import { ProviderSelector } from "./ProviderSelector";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 const DEFAULT_PROVIDER = process.env.NEXT_PUBLIC_DEFAULT_PROVIDER ?? "openai";
-const DEFAULT_MODEL_NAME = process.env.NEXT_PUBLIC_DEFAULT_MODEL_NAME ?? "";
 const extensionByFormat: Record<OutputFormat, string> = {
   promptfoo: ".yaml",
   deepeval: ".py",
@@ -18,7 +17,7 @@ const extensionByFormat: Record<OutputFormat, string> = {
 };
 
 const isProvider = (value: string): value is Provider =>
-  ["openai", "anthropic", "google", "ollama", "lmstudio"].includes(value);
+  ["openai", "anthropic", "google", "ollama"].includes(value);
 
 type DemoPreset = {
   label: string;
@@ -154,7 +153,7 @@ export function AppForm() {
 
       <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
         Mode is automatic: if selected provider keys are configured, generation runs in live mode. Otherwise, backend
-        attempts local LLM (`ollama` or `lmstudio`) and falls back to static demo output.
+        attempts local LLM (ollama) and falls back to static demo output.
       </div>
 
       <div className="rounded-md border border-slate-200 bg-white p-3 text-sm">
@@ -162,7 +161,7 @@ export function AppForm() {
         <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs">{payload.provider}</span>
         <span className="ml-3 font-semibold text-slate-700">Model:</span>{" "}
         <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs">
-          {DEFAULT_MODEL_NAME || "provider default"}
+          provider default
         </span>
       </div>
 

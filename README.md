@@ -59,12 +59,11 @@ Crucible Eval supports:
 - OpenAI
 - Anthropic
 - Google
-- Ollama
-- LM Studio
+- Ollama (local)
 
 Provider abstraction enables:
 1. Switching vendors without rewriting core test-generation logic.
-2. Local/offline experimentation via Ollama/LM Studio.
+2. Local/offline experimentation via Ollama.
 3. Unified downstream exports regardless of upstream generation provider.
 
 ## Core Nuances Considered
@@ -75,8 +74,8 @@ This project intentionally handles concerns beyond "send prompt, return template
 3. Provider-specific generation behavior and failure modes.
 4. Mode fallback logic:
    - Live provider when configured.
-   - Local provider fallback (Ollama/LM Studio) when cloud keys are absent.
-   - Static deterministic demo fallback when local provider is unavailable.
+   - Local Ollama fallback when cloud keys are absent.
+   - Static deterministic demo fallback when Ollama is unavailable.
 5. App-type-aware prompting strategy (RAG/agent/chatbot/codegen/custom).
 6. Benchmark enrichment by app type and domain.
 7. Framework-specific exporter shaping (not one generic dump).
@@ -154,16 +153,20 @@ npm run dev
 ## Configuration
 
 Key `.env` variables:
-- `DEFAULT_PROVIDER=openai|anthropic|google|ollama|lmstudio`
-- `DEFAULT_MODEL_NAME=<model_name>`
-- `OPENAI_API_KEY=`
-- `ANTHROPIC_API_KEY=`
-- `GOOGLE_API_KEY=`
-- `OLLAMA_BASE_URL=http://127.0.0.1:11434`
-- `LMSTUDIO_BASE_URL=http://127.0.0.1:1234`
-- `DEMO_MODE_ENABLED=true|false`
-- `DEMO_PROVIDER=ollama|lmstudio`
-- `LOCAL_LLM_TIMEOUT_SECONDS=20`
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GOOGLE_API_KEY` | — | Cloud provider auth (fill in at least one) |
+| `OPENAI_MODEL_NAME` | `gpt-4o` | OpenAI model override |
+| `ANTHROPIC_MODEL_NAME` | `claude-sonnet-4-6` | Anthropic model override |
+| `GOOGLE_MODEL_NAME` | `gemini-2.0-flash` | Google model override |
+| `OLLAMA_MODEL_NAME` | `deepseek-r1` | Ollama model override |
+| `OLLAMA_BASE_URL` | `http://127.0.0.1:11434` | Local Ollama endpoint |
+| `DEFAULT_PROVIDER` | `openai` | Provider used when frontend doesn't specify |
+| `DEMO_MODE_ENABLED` | `true` | Falls back to Ollama then static demo when no cloud key is set |
+| `LOCAL_LLM_TIMEOUT_SECONDS` | `120` | Timeout for Ollama requests |
+| `CORS_ORIGINS` | `http://localhost:3000` | Allowed frontend origin |
+| `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:8000` | Frontend → backend URL |
 
 ## API
 

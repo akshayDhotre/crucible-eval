@@ -7,7 +7,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field, model_validator
 
 AppType = Literal["rag", "chatbot", "agent", "codegen", "custom"]
-Provider = Literal["openai", "anthropic", "google", "ollama", "lmstudio"]
+Provider = Literal["openai", "anthropic", "google", "ollama"]
 OutputFormat = Literal["promptfoo", "deepeval", "ragas", "raw"]
 Severity = Literal["critical", "high", "medium", "low"]
 
@@ -31,7 +31,7 @@ class ExampleInteraction(BaseModel):
 
 def _default_provider() -> Provider:
     value = os.getenv("DEFAULT_PROVIDER", "openai").strip().lower()
-    allowed = {"openai", "anthropic", "google", "ollama", "lmstudio"}
+    allowed = {"openai", "anthropic", "google", "ollama"}
     return value if value in allowed else "openai"
 
 

@@ -13,7 +13,7 @@ class AnthropicProvider(BaseLLMProvider):
         if not api_key:
             raise RuntimeError("ANTHROPIC_API_KEY is not configured")
         self.client = AsyncAnthropic(api_key=api_key)
-        self.model = self.resolve_model("claude-sonnet-4-6")
+        self.model = self.resolve_model("claude-sonnet-4-6", "ANTHROPIC_MODEL_NAME")
 
     async def generate(self, system: str, user: str) -> str:
         try:

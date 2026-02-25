@@ -13,7 +13,7 @@ class OpenAIProvider(BaseLLMProvider):
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY is not configured")
         self.client = AsyncOpenAI(api_key=api_key)
-        self.model = self.resolve_model("gpt-4o")
+        self.model = self.resolve_model("gpt-4o", "OPENAI_MODEL_NAME")
 
     async def generate(self, system: str, user: str) -> str:
         payload = {

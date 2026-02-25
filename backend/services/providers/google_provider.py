@@ -14,7 +14,7 @@ class GoogleProvider(BaseLLMProvider):
         if not api_key:
             raise RuntimeError("GOOGLE_API_KEY is not configured")
         self.client = genai.Client(api_key=api_key)
-        self.model = self.resolve_model("gemini-2.0-flash")
+        self.model = self.resolve_model("gemini-2.0-flash", "GOOGLE_MODEL_NAME")
 
     async def generate(self, system: str, user: str) -> str:
         try:
