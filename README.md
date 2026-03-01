@@ -1,5 +1,14 @@
 # Crucible Eval
 
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![OpenAI](https://img.shields.io/badge/OpenAI-supported-74aa9c?logo=openai&logoColor=white)
+![Anthropic](https://img.shields.io/badge/Anthropic-supported-D97706?logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google-Gemini-4285F4?logo=google&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-local-lightgrey)
+
 Crucible Eval is an evaluation-suite factory for LLM applications.
 
 It turns app context (system prompt, domain, app type, provider preferences) into runnable artifacts for standard evaluation frameworks:
@@ -8,6 +17,10 @@ It turns app context (system prompt, domain, app type, provider preferences) int
 - Ragas
 
 The goal is to reduce the gap between "we should evaluate" and "we are running repeatable evals in CI/QA".
+
+## Demo
+
+![Crucible Eval Demo](./.github/assets/crucible_eval_demo.gif)
 
 ## Why This Exists
 
